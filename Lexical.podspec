@@ -17,6 +17,8 @@ Pod::Spec.new do |s|
     s.subspec 'Plugin' do |sp|
         sp.dependency 'Lexical/Core'
         sp.source_files = 'Plugins/**/*'
+
+        sp.dependency 'SwiftSoup'
     end
 
 end
