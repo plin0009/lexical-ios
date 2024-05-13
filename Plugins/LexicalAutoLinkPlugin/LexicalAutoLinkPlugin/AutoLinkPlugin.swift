@@ -6,7 +6,7 @@
  */
 
 import Foundation
-import Lexical
+// import Lexical
 // import LexicalLinkPlugin
 import UIKit
 

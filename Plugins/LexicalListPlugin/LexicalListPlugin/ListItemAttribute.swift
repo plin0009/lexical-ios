@@ -7,7 +7,8 @@
 
 import CoreGraphics
 import Foundation
-import Lexical
+
+// import Lexical
 
 extension NSAttributedString.Key {
   public static let listItem: NSAttributedString.Key = .init(rawValue: "list_item")

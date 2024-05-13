@@ -6,7 +6,8 @@
  */
 
 import Foundation
-import Lexical
+
+// import Lexical
 
 public enum ListType {
   case bullet

@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import Lexical
+// import Lexical
 import SwiftSoup
 
 extension Lexical.ParagraphNode: NodeHTMLSupport {
@@ -46,7 +46,9 @@ extension Lexical.TextNode: NodeHTMLSupport {
     return (after: nil, element: element)
   }
 
-  private func wrapDomElement(_ element: SwiftSoup.Element, with tagString: String) throws -> SwiftSoup.Element {
+  private func wrapDomElement(_ element: SwiftSoup.Element, with tagString: String) throws
+    -> SwiftSoup.Element
+  {
     let newElement = SwiftSoup.Element(Tag(tagString), "")
     try newElement.appendChild(element)
     return newElement

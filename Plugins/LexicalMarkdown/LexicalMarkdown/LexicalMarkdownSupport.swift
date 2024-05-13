@@ -7,8 +7,8 @@
 
 import Foundation
 import Lexical
-import LexicalLinkPlugin
-import LexicalListPlugin
+// import LexicalLinkPlugin
+// import LexicalListPlugin
 import Markdown
 
 private func makeIndentation(_ count: Int) -> String {
@@ -102,7 +102,9 @@ extension LexicalListPlugin.ListNode: NodeMarkdownBlockSupport {
 extension LexicalListPlugin.ListItemNode: NodeMarkdownBlockSupport {
   public func exportBlockMarkdown() throws -> Markdown.BlockMarkup {
     let children: [Markdown.BlockMarkup] = getChildren().compactMap {
-      if let inline = try? ($0 as? NodeMarkdownInlineSupport)?.exportInlineMarkdown(indentation: getIndent()) {
+      if let inline = try? ($0 as? NodeMarkdownInlineSupport)?.exportInlineMarkdown(
+        indentation: getIndent())
+      {
         return Markdown.Paragraph(inline)
       } else {
         return try? ($0 as? NodeMarkdownBlockSupport)?.exportBlockMarkdown()
@@ -120,10 +122,11 @@ extension LexicalListPlugin.ListItemNode: NodeMarkdownBlockSupport {
 
 extension LexicalLinkPlugin.LinkNode: NodeMarkdownInlineSupport {
   public func exportInlineMarkdown(indentation: Int) throws -> Markdown.InlineMarkup {
-    Markdown.Link(destination: getURL(),
-                  getChildren()
-                    .exportAsInlineMarkdown(indentation: getIndent())
-                    .compactMap { $0 as? Markdown.RecurringInlineMarkup })
+    Markdown.Link(
+      destination: getURL(),
+      getChildren()
+        .exportAsInlineMarkdown(indentation: getIndent())
+        .compactMap { $0 as? Markdown.RecurringInlineMarkup })
   }
 }
 
@@ -162,8 +165,8 @@ extension Lexical.HeadingNode: NodeMarkdownBlockSupport {
   }
 }
 
-private extension HeadingTagType {
-  var intValue: Int {
+extension HeadingTagType {
+  fileprivate var intValue: Int {
     switch self {
     case .h1: return 1
     case .h2: return 2

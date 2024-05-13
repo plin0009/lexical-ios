@@ -6,9 +6,9 @@
  */
 
 import Foundation
-import Lexical
-import LexicalHTML
-import LexicalListPlugin
+// import Lexical
+// import LexicalHTML
+// import LexicalListPlugin
 import SwiftSoup
 
 extension LexicalListPlugin.ListNode: NodeHTMLSupport {

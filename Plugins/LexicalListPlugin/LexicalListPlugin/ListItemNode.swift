@@ -6,7 +6,7 @@
  */
 
 import Foundation
-import Lexical
+// import Lexical
 import UIKit
 
 extension NodeType {
@@ -62,7 +62,9 @@ public class ListItemNode: ElementNode {
     }
   }
 
-  override public func replace<T>(replaceWith replaceWithNode: T, includeChildren: Bool = false) throws -> T where T: Node {
+  override public func replace<T>(replaceWith replaceWithNode: T, includeChildren: Bool = false)
+    throws -> T where T: Node
+  {
     if replaceWithNode is ListItemNode {
       return try super.replace(replaceWith: replaceWithNode)
     }
@@ -148,8 +150,7 @@ public class ListItemNode: ElementNode {
     let nextSibling = self.getNextSibling()
     try super.remove()
 
-    if
-      let prevSibling = prevSibling as? ListItemNode,
+    if let prevSibling = prevSibling as? ListItemNode,
       let nextSibling = nextSibling as? ListItemNode,
       isNestedListNode(node: prevSibling),
       isNestedListNode(node: nextSibling),
@@ -246,7 +247,8 @@ public class ListItemNode: ElementNode {
   }
 
   // TODO: support other types of list. Correctly derive the item number in this method.
-  override public func getAttributedStringAttributes(theme: Theme) -> [NSAttributedString.Key: Any] {
+  override public func getAttributedStringAttributes(theme: Theme) -> [NSAttributedString.Key: Any]
+  {
     let node: ListItemNode = getLatest()
     let listNode = node.getParent() as? ListNode
 
@@ -272,8 +274,9 @@ public class ListItemNode: ElementNode {
         let prevItemsCount = getPreviousSiblings()
           .filter {
             if let siblingItem = $0 as? ListItemNode,
-               // Don't count sibling items containing nested lists
-               !(siblingItem.getFirstChild() is ListNode) {
+              // Don't count sibling items containing nested lists
+              !(siblingItem.getFirstChild() is ListNode)
+            {
               return true
             } else {
               return false

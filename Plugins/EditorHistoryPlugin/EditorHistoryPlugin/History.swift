@@ -6,7 +6,7 @@
  */
 
 import Foundation
-import Lexical
+// import Lexical
 import UIKit
 
 enum MergeAction {
@@ -42,7 +42,8 @@ public class EditorHistory {
   public func applyChange(
     editorState: EditorState,
     prevEditorState: EditorState,
-    dirtyNodes: DirtyNodeMap) {
+    dirtyNodes: DirtyNodeMap
+  ) {
     guard let editor else {
       return
     }
@@ -100,8 +101,8 @@ public class EditorHistory {
 
   func undo() {
     guard let externalHistoryState,
-          externalHistoryState.undoStack.count != 0,
-          let editor
+      externalHistoryState.undoStack.count != 0,
+      let editor
     else { return }
 
     var historyStateEntry = externalHistoryState.undoStack.removeLast()
@@ -117,7 +118,8 @@ public class EditorHistory {
     externalHistoryState.current = historyStateEntry
     do {
       if let editor = historyStateEntry.editor,
-         let undoSelection = historyStateEntry.undoSelection {
+        let undoSelection = historyStateEntry.undoSelection
+      {
         try editor.setEditorState(historyStateEntry.editorState.clone(selection: undoSelection))
         historyStateEntry.editor = editor
         editor.dispatchCommand(type: .updatePlaceholderVisibility)
@@ -131,8 +133,8 @@ public class EditorHistory {
 
   func redo() {
     guard let externalHistoryState,
-          externalHistoryState.redoStack.count != 0,
-          let editor
+      externalHistoryState.redoStack.count != 0,
+      let editor
     else { return }
 
     if let current = externalHistoryState.current {
@@ -148,7 +150,8 @@ public class EditorHistory {
     externalHistoryState.current = historyStateEntry
 
     do {
-      try editor.setEditorState(historyStateEntry.editorState.clone(selection: historyStateEntry.undoSelection))
+      try editor.setEditorState(
+        historyStateEntry.editorState.clone(selection: historyStateEntry.undoSelection))
       editor.dispatchCommand(type: .updatePlaceholderVisibility)
     } catch {
       editor.log(.other, .warning, "redo: Failed to setEditorState: \(error.localizedDescription)")
@@ -205,10 +208,9 @@ public class EditorHistory {
 
     let isSameEditor = currentHistoryEntry == nil || currentHistoryEntry?.editor == self.editor
 
-    if changeType != .other &&
-        changeType == prevChangeType &&
-        changeTime < prevChangeTime + Double(self.delay) &&
-        isSameEditor {
+    if changeType != .other && changeType == prevChangeType
+      && changeTime < prevChangeTime + Double(self.delay) && isSameEditor
+    {
       prevChangeTime = changeTime
       prevChangeType = changeType
 
@@ -239,7 +241,9 @@ public class HistoryState {
   var redoStack: [HistoryStateEntry] = []
   var undoStack: [HistoryStateEntry] = []
 
-  public init(current: HistoryStateEntry?, redoStack: [HistoryStateEntry], undoStack: [HistoryStateEntry]) {
+  public init(
+    current: HistoryStateEntry?, redoStack: [HistoryStateEntry], undoStack: [HistoryStateEntry]
+  ) {
     self.current = current
     self.redoStack = redoStack
     self.undoStack = undoStack
@@ -256,7 +260,8 @@ public class HistoryState {
 
 func getDirtyNodes(
   editorState: EditorState,
-  dirtyLeavesSet: DirtyNodeMap) -> [Node] {
+  dirtyLeavesSet: DirtyNodeMap
+) -> [Node] {
   let dirtyLeaves = dirtyLeavesSet
   let nodeMap = editorState.getNodeMap()
   var nodes: [Node] = []
@@ -285,7 +290,8 @@ func getChangeType(
   prevEditorState: EditorState?,
   nextEditorState: EditorState,
   dirtyLeavesSet: DirtyNodeMap,
-  isComposing: Bool) throws -> ChangeType {
+  isComposing: Bool
+) throws -> ChangeType {
   if prevEditorState == nil || dirtyLeavesSet.count == 0 {
     return .other
   }
@@ -297,13 +303,14 @@ func getChangeType(
   }
 
   guard let nextSelection = nextEditorState.selection,
-        let prevSelection = prevEditorState.selection
+    let prevSelection = prevEditorState.selection
   else {
     throw LexicalError.internal("Failed to find selection")
   }
 
   guard let nextSelection = nextSelection as? RangeSelection,
-        let prevSelection = prevSelection as? RangeSelection else {
+    let prevSelection = prevSelection as? RangeSelection
+  else {
     return .other
   }
 
@@ -324,10 +331,11 @@ func getChangeType(
     let prevAnchorNode = nextNodeMap[prevSelection.anchor.key]
 
     if let nextAnchorNode = nextNodeMap[nextSelection.anchor.key] as? TextNode,
-       prevAnchorNode != nil,
-       !prevEditorState.getNodeMap().keys.contains(nextAnchorNode.key),
-       nextAnchorNode.getTextPartSize() == 1,
-       nextSelection.anchor.offset == 1 {
+      prevAnchorNode != nil,
+      !prevEditorState.getNodeMap().keys.contains(nextAnchorNode.key),
+      nextAnchorNode.getTextPartSize() == 1,
+      nextSelection.anchor.offset == 1
+    {
       return .insertCharacterAfterSelection
     }
     return .other
@@ -347,7 +355,9 @@ func getChangeType(
     throw LexicalError.internal("prev/nextDirtyNode is not TextNode")
   }
 
-  if prevDirtyNode.getMode_dangerousPropertyAccess() != nextDirtyNode.getMode_dangerousPropertyAccess() {
+  if prevDirtyNode.getMode_dangerousPropertyAccess()
+    != nextDirtyNode.getMode_dangerousPropertyAccess()
+  {
     return .other
   }
 

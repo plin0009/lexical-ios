@@ -6,12 +6,12 @@
  */
 
 import Foundation
-import Lexical
+// import Lexical
 import UIKit
 
-public extension CommandType {
-  static let undo = CommandType(rawValue: "undo")
-  static let redo = CommandType(rawValue: "redo")
-  static let canUndo = CommandType(rawValue: "canUndo")
-  static let canRedo = CommandType(rawValue: "canRedo")
+extension CommandType {
+  public static let undo = CommandType(rawValue: "undo")
+  public static let redo = CommandType(rawValue: "redo")
+  public static let canUndo = CommandType(rawValue: "canUndo")
+  public static let canRedo = CommandType(rawValue: "canRedo")
 }

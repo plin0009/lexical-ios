@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import Lexical
+// import Lexical
 import UIKit
 
 extension NodeType {
@@ -74,7 +74,8 @@ open class LinkNode: ElementNode {
     Self(url: url, key: key)
   }
 
-  override public func getAttributedStringAttributes(theme: Theme) -> [NSAttributedString.Key: Any] {
+  override public func getAttributedStringAttributes(theme: Theme) -> [NSAttributedString.Key: Any]
+  {
     if url.isEmpty {
       return [:]
     }

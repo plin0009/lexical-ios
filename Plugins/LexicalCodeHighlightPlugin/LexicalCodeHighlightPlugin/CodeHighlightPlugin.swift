@@ -6,7 +6,7 @@
  */
 
 import Foundation
-import Lexical
+// import Lexical
 import UIKit
 
 open class CodeHighlightPlugin: Plugin {
@@ -19,27 +19,33 @@ open class CodeHighlightPlugin: Plugin {
     self.editor = editor
     do {
       try editor.registerNode(nodeType: NodeType.codeHighlight, class: CodeHighlightNode.self)
-      codeTransform = editor.addNodeTransform(nodeType: NodeType.code, transform: { [weak self] in
-        guard
-          let strongSelf = self,
-          let node = $0 as? CodeNode
-        else { return }
-        try strongSelf.codeNodeTransform(node: node)
-      })
-      textTransform = editor.addNodeTransform(nodeType: NodeType.text, transform: { [weak self] in
-        guard
-          let strongSelf = self,
-          let node = $0 as? TextNode
-        else { return }
-        try strongSelf.textNodeTransform(node: node)
-      })
-      highlightTransform = editor.addNodeTransform(nodeType: NodeType.codeHighlight, transform: { [weak self] in
-        guard
-          let strongSelf = self,
-          let node = $0 as? TextNode
-        else { return }
-        try strongSelf.textNodeTransform(node: node)
-      })
+      codeTransform = editor.addNodeTransform(
+        nodeType: NodeType.code,
+        transform: { [weak self] in
+          guard
+            let strongSelf = self,
+            let node = $0 as? CodeNode
+          else { return }
+          try strongSelf.codeNodeTransform(node: node)
+        })
+      textTransform = editor.addNodeTransform(
+        nodeType: NodeType.text,
+        transform: { [weak self] in
+          guard
+            let strongSelf = self,
+            let node = $0 as? TextNode
+          else { return }
+          try strongSelf.textNodeTransform(node: node)
+        })
+      highlightTransform = editor.addNodeTransform(
+        nodeType: NodeType.codeHighlight,
+        transform: { [weak self] in
+          guard
+            let strongSelf = self,
+            let node = $0 as? TextNode
+          else { return }
+          try strongSelf.textNodeTransform(node: node)
+        })
     } catch {
     }
   }
@@ -70,15 +76,20 @@ open class CodeHighlightPlugin: Plugin {
 
     try editor.update {
 
-      try updateAndRetainSelection(node: node, updateFn: {
-        let code = node.getTextContent()
-        let highlightNodes = getHighlightNodes(text: code)
-        guard let (from, to, nodesForReplacement) = getDiffRange(prevNodes: node.getChildren(), nextNodes: highlightNodes) else {
-          return false
-        }
-        try replaceRange(node: node, from: from, to: to, nodesToInsert: nodesForReplacement)
-        return true
-      })
+      try updateAndRetainSelection(
+        node: node,
+        updateFn: {
+          let code = node.getTextContent()
+          let highlightNodes = getHighlightNodes(text: code)
+          guard
+            let (from, to, nodesForReplacement) = getDiffRange(
+              prevNodes: node.getChildren(), nextNodes: highlightNodes)
+          else {
+            return false
+          }
+          try replaceRange(node: node, from: from, to: to, nodesToInsert: nodesForReplacement)
+          return true
+        })
     }
   }
 
@@ -123,15 +134,22 @@ open class CodeHighlightPlugin: Plugin {
 
     let anchor = selection.anchor
     let anchorOffset = anchor.offset
-    let isNewLineAnchor = anchor.type == .element && isLineBreakNode(node.getChildAtIndex(index: anchor.offset - 1))
+    let isNewLineAnchor =
+      anchor.type == .element && isLineBreakNode(node.getChildAtIndex(index: anchor.offset - 1))
     var textOffset = 0
 
     // Calculating previous text offset (all text node prior to anchor + anchor own text offset)
     if !isNewLineAnchor {
       let anchorNode = try anchor.getNode()
-      textOffset = anchorOffset + anchorNode.getPreviousSiblings().reduce(0, { offset, node in
-        return offset + (isLineBreakNode(node) ? 0 : node.getTextContentSize(includeInert: false, includeDirectionless: false))
-      })
+      textOffset =
+        anchorOffset
+        + anchorNode.getPreviousSiblings().reduce(
+          0,
+          { offset, node in
+            return offset
+              + (isLineBreakNode(node)
+                ? 0 : node.getTextContentSize(includeInert: false, includeDirectionless: false))
+          })
     }
 
     let hasChanges = try updateFn()
@@ -142,7 +160,8 @@ open class CodeHighlightPlugin: Plugin {
     // Non-text anchors only happen for line breaks, otherwise
     // selection will be within text node (code highlight node)
     if isNewLineAnchor {
-      try (anchor.getNode() as? ElementNode)?.select(anchorOffset: anchorOffset, focusOffset: anchorOffset)
+      try (anchor.getNode() as? ElementNode)?.select(
+        anchorOffset: anchorOffset, focusOffset: anchorOffset)
       return
     }
 
@@ -181,7 +200,8 @@ open class CodeHighlightPlugin: Plugin {
         try firstChild.insertBefore(nodeToInsert: node)
       }
     } else {
-      var currentNode = children.count < from - 1 ? children[from - 1] : children[children.count - 1]
+      var currentNode =
+        children.count < from - 1 ? children[from - 1] : children[children.count - 1]
       for node in nodesToInsert {
         try currentNode.insertAfter(nodeToInsert: node)
         currentNode = node
@@ -191,7 +211,9 @@ open class CodeHighlightPlugin: Plugin {
 
   // Finds minimal diff range between two nodes lists. It returns from/to range boundaries of prevNodes
   // that needs to be replaced with `nodes` (subset of nextNodes) to make prevNodes equal to nextNodes.
-  func getDiffRange(prevNodes: [Node], nextNodes: [Node]) -> (from: Int, to: Int, nodesForReplacement: [Node])? {
+  func getDiffRange(prevNodes: [Node], nextNodes: [Node]) -> (
+    from: Int, to: Int, nodesForReplacement: [Node]
+  )? {
     var leadingMatch = 0
     while leadingMatch < prevNodes.count {
       if !isEqual(nodeA: prevNodes[leadingMatch], nodeB: nextNodes[leadingMatch]) {
@@ -207,7 +229,10 @@ open class CodeHighlightPlugin: Plugin {
     var trailingMatch = 0
     while trailingMatch < maxTrailingMatch {
       trailingMatch += 1
-      if !isEqual(nodeA: prevNodes[prevNodesLength - trailingMatch], nodeB: nextNodes[nextNodesLength - trailingMatch]) {
+      if !isEqual(
+        nodeA: prevNodes[prevNodesLength - trailingMatch],
+        nodeB: nextNodes[nextNodesLength - trailingMatch])
+      {
         trailingMatch -= 1
         break
       }
@@ -217,18 +242,18 @@ open class CodeHighlightPlugin: Plugin {
     let to = prevNodesLength - trailingMatch
     let nodesForReplacement = nextNodes[leadingMatch..<(nextNodesLength - trailingMatch)]
 
-    let  hasChanges = from != to || nodesForReplacement.count > 0
+    let hasChanges = from != to || nodesForReplacement.count > 0
     return hasChanges ? (from, to, Array(nodesForReplacement)) : nil
   }
 
   func isEqual(nodeA: Node, nodeB: Node) -> Bool {
     // Only checking for code higlight nodes and linebreaks. If it's regular text node
     // returning false so that it's transformed into code highlight node
-    if
-      let nodeACodeHighlight = nodeA as? CodeHighlightNode,
-      let nodeBCodeHighlight = nodeB as? CodeHighlightNode {
-      return nodeACodeHighlight.getTextPart() == nodeBCodeHighlight.getTextPart() &&
-        nodeACodeHighlight.highlightType == nodeBCodeHighlight.highlightType
+    if let nodeACodeHighlight = nodeA as? CodeHighlightNode,
+      let nodeBCodeHighlight = nodeB as? CodeHighlightNode
+    {
+      return nodeACodeHighlight.getTextPart() == nodeBCodeHighlight.getTextPart()
+        && nodeACodeHighlight.highlightType == nodeBCodeHighlight.highlightType
     }
 
     if isLineBreakNode(nodeA) && isLineBreakNode(nodeB) {

@@ -6,7 +6,8 @@
  */
 
 import Foundation
-import Lexical
+
+// import Lexical
 
 public func formatBulletedList(editor: Editor) throws {
   return
@@ -28,12 +29,10 @@ private func isSelectingEmptyListItem(
   return false
 }
 
-/**
- * Creates a ListNode of listType.
- * @param listType - The type of list to be created. Can be 'number', 'bullet', or 'check'.
- * @param start - Where an ordered list starts its count, start = 1 if left undefined.
- * @returns The new ListNode
- */
+/// Creates a ListNode of listType.
+/// @param listType - The type of list to be created. Can be 'number', 'bullet', or 'check'.
+/// @param start - Where an ordered list starts its count, start = 1 if left undefined.
+/// @returns The new ListNode
 public func createListNode(listType: ListType, start: Int = 1) -> ListNode {
   return ListNode(listType: listType, start: start)
 }
@@ -90,20 +89,20 @@ private func getListItemValue(listItem: ListItemNode) throws -> Int {
 
   let siblings = listItem.getPreviousSiblings()
   for sibling in siblings {
-    if let sibling = sibling as? ListItemNode, let firstChild = sibling.getFirstChild(), !(firstChild is ListNode) {
+    if let sibling = sibling as? ListItemNode, let firstChild = sibling.getFirstChild(),
+      !(firstChild is ListNode)
+    {
       value += 1
     }
   }
   return value
 }
 
-/**
- * Takes the value of a child ListItemNode and makes it the value the ListItemNode
- * should be if it isn't already. If only certain children should be updated, they
- * can be passed optionally in an array.
- * @param list - The list whose children are updated.
- * @param children - An array of the children to be updated.
- */
+/// Takes the value of a child ListItemNode and makes it the value the ListItemNode
+/// should be if it isn't already. If only certain children should be updated, they
+/// can be passed optionally in an array.
+/// @param list - The list whose children are updated.
+/// @param children - An array of the children to be updated.
 public func updateChildrenListItemValue(
   list: ListNode,
   children: [ListNode]? = nil
@@ -121,16 +120,14 @@ public func updateChildrenListItemValue(
   }
 }
 
-/**
- * Inserts a new ListNode. If the selection's anchor node is an empty ListItemNode and is a child of
- * the root/shadow root, it will replace the ListItemNode with a ListNode and the old ListItemNode.
- * Otherwise it will replace its parent with a new ListNode and re-insert the ListItemNode and any previous children.
- * If the selection's anchor node is not an empty ListItemNode, it will add a new ListNode or merge an existing ListNode,
- * unless the the node is a leaf node, in which case it will attempt to find a ListNode up the branch and replace it with
- * a new ListNode, or create a new ListNode at the nearest root/shadow root.
- * @param editor - The lexical editor.
- * @param listType - The type of list, "number" | "bullet" | "check".
- */
+/// Inserts a new ListNode. If the selection's anchor node is an empty ListItemNode and is a child of
+/// the root/shadow root, it will replace the ListItemNode with a ListNode and the old ListItemNode.
+/// Otherwise it will replace its parent with a new ListNode and re-insert the ListItemNode and any previous children.
+/// If the selection's anchor node is not an empty ListItemNode, it will add a new ListNode or merge an existing ListNode,
+/// unless the the node is a leaf node, in which case it will attempt to find a ListNode up the branch and replace it with
+/// a new ListNode, or create a new ListNode at the nearest root/shadow root.
+/// @param editor - The lexical editor.
+/// @param listType - The type of list, "number" | "bullet" | "check".
 public func insertList(editor: Editor, listType: ListType) throws {
   try editor.update {
     guard let selection = try getSelection() else {
@@ -167,8 +164,9 @@ public func insertList(editor: Editor, listType: ListType) throws {
       var handled: Set<NodeKey> = Set()
       for node in nodes {
         if let node = node as? ElementNode,
-           node.isEmpty(),
-           !handled.contains(node.getKey()) {
+          node.isEmpty(),
+          !handled.contains(node.getKey())
+        {
           _ = try createListOrMerge(node: node, listType: listType)
           continue
         }
@@ -191,9 +189,7 @@ public func insertList(editor: Editor, listType: ListType) throws {
             } else {
               let nextParent = parentIterator.getParent()
 
-              if
-                isRootNode(node: nextParent) &&
-                  !handled.contains(parentKey) {
+              if isRootNode(node: nextParent) && !handled.contains(parentKey) {
                 handled.insert(parentKey)
                 _ = try createListOrMerge(node: parentIterator, listType: listType)
                 break
@@ -208,11 +204,9 @@ public func insertList(editor: Editor, listType: ListType) throws {
   }
 }
 
-/**
- * Checks to see if the passed node is a ListItemNode and has a ListNode as a child.
- * @param node - The node to be checked.
- * @returns true if the node is a ListItemNode and has a ListNode child, false otherwise.
- */
+/// Checks to see if the passed node is a ListItemNode and has a ListNode as a child.
+/// @param node - The node to be checked.
+/// @returns true if the node is a ListItemNode and has a ListNode child, false otherwise.
 public func isNestedListNode(node: Node?) -> Bool {
   if let node = node as? ListItemNode {
     return node.getFirstChild() is ListNode
@@ -220,18 +214,15 @@ public func isNestedListNode(node: Node?) -> Bool {
   return false
 }
 
-/**
- * A recursive function that goes through each list and their children, including nested lists,
- * appending list2 children after list1 children and updating ListItemNode values.
- * @param list1 - The first list to be merged.
- * @param list2 - The second list to be merged.
- */
+/// A recursive function that goes through each list and their children, including nested lists,
+/// appending list2 children after list1 children and updating ListItemNode values.
+/// @param list1 - The first list to be merged.
+/// @param list2 - The second list to be merged.
 public func mergeLists(list1: ListNode, list2: ListNode) throws {
   let listItem1 = list1.getLastChild()
   let listItem2 = list2.getFirstChild()
 
-  if
-    let listItem1 = listItem1 as? ListItemNode,
+  if let listItem1 = listItem1 as? ListItemNode,
     let listItem2 = listItem2 as? ListItemNode,
     isNestedListNode(node: listItem1),
     isNestedListNode(node: listItem2),
@@ -251,12 +242,10 @@ public func mergeLists(list1: ListNode, list2: ListNode) throws {
   try list2.remove()
 }
 
-/**
- * Adds an empty ListNode/ListItemNode chain at listItemNode, so as to
- * create an indent effect. Won't indent ListItemNodes that have a ListNode as
- * a child, but does merge sibling ListItemNodes if one has a nested ListNode.
- * @param listItemNode - The ListItemNode to be indented.
- */
+/// Adds an empty ListNode/ListItemNode chain at listItemNode, so as to
+/// create an indent effect. Won't indent ListItemNodes that have a ListNode as
+/// a child, but does merge sibling ListItemNodes if one has a nested ListNode.
+/// @param listItemNode - The ListItemNode to be indented.
 internal func handleIndent(_ listItemNode: ListItemNode) throws {
   // go through each node and decide where to move it.
   var removed: Set<NodeKey> = Set()
@@ -330,12 +319,10 @@ internal func handleIndent(_ listItemNode: ListItemNode) throws {
   }
 }
 
-/**
- * Removes an indent by removing an empty ListNode/ListItemNode chain. An indented ListItemNode
- * has a great grandparent node of type ListNode, which is where the ListItemNode will reside
- * within as a child.
- * @param listItemNode - The ListItemNode to remove the indent (outdent).
- */
+/// Removes an indent by removing an empty ListNode/ListItemNode chain. An indented ListItemNode
+/// has a great grandparent node of type ListNode, which is where the ListItemNode will reside
+/// within as a child.
+/// @param listItemNode - The ListItemNode to remove the indent (outdent).
 internal func handleOutdent(_ listItemNode: ListItemNode) throws {
   // go through each node and decide where to move it.
 
@@ -348,8 +335,9 @@ internal func handleOutdent(_ listItemNode: ListItemNode) throws {
   // If it doesn't have these ancestors, it's not indented.
 
   if let greatGrandparentList = greatGrandparentList as? ListNode,
-     let grandparentListItem = grandparentListItem as? ListItemNode,
-     let parentList = parentList as? ListNode {
+    let grandparentListItem = grandparentListItem as? ListItemNode,
+    let parentList = parentList as? ListNode
+  {
     // if it's the first child in it's parent list, insert it into the
     // great grandparent list before the grandparent
     let firstChild = parentList.getFirstChild()

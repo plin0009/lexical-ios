@@ -7,7 +7,7 @@
 
 import AVFoundation
 import Foundation
-import Lexical
+// import Lexical
 import UIKit
 
 extension NodeType {
@@ -59,7 +59,8 @@ public class ImageNode: DecoratorNode {
       for gr in view.gestureRecognizers ?? [] {
         view.removeGestureRecognizer(gr)
       }
-      let gestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTap(gestureRecognizer:)))
+      let gestureRecognizer = UITapGestureRecognizer(
+        target: self, action: #selector(handleTap(gestureRecognizer:)))
       view.addGestureRecognizer(gestureRecognizer)
       loadImage(imageView: view)
     }
@@ -130,11 +131,16 @@ public class ImageNode: DecoratorNode {
 
   let maxImageHeight: CGFloat = 600.0
 
-  override open func sizeForDecoratorView(textViewWidth: CGFloat, attributes: [NSAttributedString.Key: Any]) -> CGSize {
+  override open func sizeForDecoratorView(
+    textViewWidth: CGFloat, attributes: [NSAttributedString.Key: Any]
+  ) -> CGSize {
 
     if size.width <= textViewWidth {
       return size
     }
-    return AVMakeRect(aspectRatio: size, insideRect: CGRect(x: 0, y: 0, width: textViewWidth, height: maxImageHeight)).size
+    return AVMakeRect(
+      aspectRatio: size,
+      insideRect: CGRect(x: 0, y: 0, width: textViewWidth, height: maxImageHeight)
+    ).size
   }
 }

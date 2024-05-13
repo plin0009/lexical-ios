@@ -6,7 +6,8 @@
  */
 
 import Foundation
-import Lexical
+
+// import Lexical
 
 open class InlineImagePlugin: Plugin {
   public init() {}

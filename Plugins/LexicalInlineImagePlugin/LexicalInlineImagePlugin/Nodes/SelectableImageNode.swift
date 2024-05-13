@@ -7,7 +7,7 @@
 
 import AVFoundation
 import Foundation
-import Lexical
+// import Lexical
 import SelectableDecoratorNode
 import UIKit
 
@@ -107,11 +107,16 @@ public class SelectableImageNode: SelectableDecoratorNode {
 
   let maxImageHeight: CGFloat = 600.0
 
-  override open func sizeForDecoratorView(textViewWidth: CGFloat, attributes: [NSAttributedString.Key: Any]) -> CGSize {
+  override open func sizeForDecoratorView(
+    textViewWidth: CGFloat, attributes: [NSAttributedString.Key: Any]
+  ) -> CGSize {
 
     if size.width <= textViewWidth {
       return size
     }
-    return AVMakeRect(aspectRatio: size, insideRect: CGRect(x: 0, y: 0, width: textViewWidth, height: maxImageHeight)).size
+    return AVMakeRect(
+      aspectRatio: size,
+      insideRect: CGRect(x: 0, y: 0, width: textViewWidth, height: maxImageHeight)
+    ).size
   }
 }
