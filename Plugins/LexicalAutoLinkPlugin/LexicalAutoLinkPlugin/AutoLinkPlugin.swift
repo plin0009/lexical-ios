@@ -7,7 +7,7 @@
 
 import Foundation
 import Lexical
-import LexicalLinkPlugin
+// import LexicalLinkPlugin
 import UIKit
 
 struct LinkMatcherResult {
@@ -34,17 +34,21 @@ open class AutoLinkPlugin: Plugin {
     self.editor = editor
     do {
       try editor.registerNode(nodeType: NodeType.autoLink, class: AutoLinkNode.self)
-      _ = editor.addNodeTransform(nodeType: NodeType.text, transform: { [weak self] in
-        guard let strongSelf = self else { return }
+      _ = editor.addNodeTransform(
+        nodeType: NodeType.text,
+        transform: { [weak self] in
+          guard let strongSelf = self else { return }
 
-        try strongSelf.transform($0)
-      })
+          try strongSelf.transform($0)
+        })
 
-      _ = editor.addNodeTransform(nodeType: NodeType.autoLink, transform: { [weak self] linkNode in
-        guard let strongSelf = self, let linkNode = linkNode as? AutoLinkNode else { return }
+      _ = editor.addNodeTransform(
+        nodeType: NodeType.autoLink,
+        transform: { [weak self] linkNode in
+          guard let strongSelf = self, let linkNode = linkNode as? AutoLinkNode else { return }
 
-        try strongSelf.handleLinkEdit(linkNode: linkNode)
-      })
+          try strongSelf.handleLinkEdit(linkNode: linkNode)
+        })
     } catch {
       print("\(error)")
     }
@@ -131,7 +135,8 @@ open class AutoLinkPlugin: Plugin {
 
   private func findFirstMatch(text: String) -> [LinkMatcher] {
     let emailMatcher = #"^\S+@\S+\.\S+$"#
-    let urlMatcher = "((?:http|https)://)?(?:www\\.)?[\\w\\d\\-_]+\\.\\w{2,3}(\\.\\w{2})?(/(?<=/)(?:[\\w\\d\\-./_]+)?)?"
+    let urlMatcher =
+      "((?:http|https)://)?(?:www\\.)?[\\w\\d\\-_]+\\.\\w{2,3}(\\.\\w{2})?(/(?<=/)(?:[\\w\\d\\-./_]+)?)?"
     var linkMatcher = [LinkMatcher]()
 
     let splitArray = text.split(separator: " ")
@@ -146,16 +151,19 @@ open class AutoLinkPlugin: Plugin {
 
         let newNSRange = (text as NSString).range(of: String(subString))
 
-        linkMatcher.append(LinkMatcher(index: index, text: String(subString), url: newURLString, range: newNSRange))
+        linkMatcher.append(
+          LinkMatcher(index: index, text: String(subString), url: newURLString, range: newNSRange))
       }
 
       // find email
-      let result = subString.range(of: emailMatcher, options: [.regularExpression], range: nil, locale: nil)
+      let result = subString.range(
+        of: emailMatcher, options: [.regularExpression], range: nil, locale: nil)
       if result != nil {
         let urlString = "mailto:" + String(subString)
         let newNSRange = (text as NSString).range(of: String(subString))
 
-        linkMatcher.append(LinkMatcher(index: index, text: String(subString), url: urlString, range: newNSRange))
+        linkMatcher.append(
+          LinkMatcher(index: index, text: String(subString), url: urlString, range: newNSRange))
       }
     }
 

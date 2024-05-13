@@ -6,7 +6,7 @@
  */
 
 import Lexical
-import LexicalLinkPlugin
+// import LexicalLinkPlugin
 import UIKit
 
 extension NodeType {
