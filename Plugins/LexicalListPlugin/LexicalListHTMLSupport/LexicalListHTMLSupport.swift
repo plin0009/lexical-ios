@@ -11,7 +11,7 @@ import Foundation
 // import LexicalListPlugin
 import SwiftSoup
 
-extension LexicalListPlugin.ListNode: NodeHTMLSupport {
+extension ListNode: NodeHTMLSupport {
   public static func importDOM(domNode: SwiftSoup.Node) throws -> DOMConversionOutput {
     return (after: nil, forChild: nil, node: [])
   }
@@ -28,7 +28,7 @@ extension LexicalListPlugin.ListNode: NodeHTMLSupport {
   }
 }
 
-extension LexicalListPlugin.ListItemNode: NodeHTMLSupport {
+extension ListItemNode: NodeHTMLSupport {
   public static func importDOM(domNode: SwiftSoup.Node) throws -> DOMConversionOutput {
     return (after: nil, forChild: nil, node: [])
   }
