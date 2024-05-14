@@ -8,17 +8,17 @@ Pod::Spec.new do |s|
     s.swift_version  = '5.4'
     s.author = 'Peter Lin'
     s.source = { :git => 'https://github.com/plin0009/lexical-ios.git' }
-    # s.source_files = 'Lexical/**/*'
+    s.source_files = 'Lexical/**/*'
 
-    s.subspec 'Core' do |sp|
-        sp.source_files = 'Lexical/**/*'
-    end
+    # s.subspec 'Core' do |sp|
+    #     sp.source_files = 'Lexical/**/*'
+    # end
 
-    s.subspec 'Plugin' do |sp|
-        sp.dependency 'Lexical/Core'
-        sp.source_files = 'Plugins/**/*'
+    # s.subspec 'Plugin' do |sp|
+    #     sp.dependency 'Lexical/Core'
+    #     sp.source_files = 'Plugins/**/*'
 
-        sp.dependency 'SwiftSoup'
-    end
+    #     sp.dependency 'SwiftSoup'
+    # end
 
 end
